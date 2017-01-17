@@ -14,7 +14,7 @@ public class FlabeeGame extends Game {
 
 	@Override
 	public void create () {
-		device=new Device().createShapeRenderer();
+		device=new Device().createShapeRenderer().createBitmapFont().createSpriteBatch();
 		device.setLogging(true);
 		gameScreen=new GameScreen(this);
 		setScreen(gameScreen);

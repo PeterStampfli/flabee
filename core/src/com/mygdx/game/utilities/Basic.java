@@ -47,7 +47,7 @@ public class Basic {
      */
     public static void logNumberOfRenderCalls() {
         numberOfRenderCalls++;
-        Logger.log("renderFrame calls: " + numberOfRenderCalls);
+        Log.log("renderFrame calls: " + numberOfRenderCalls);
     }
 
     /**

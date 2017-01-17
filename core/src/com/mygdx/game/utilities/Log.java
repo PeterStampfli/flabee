@@ -7,7 +7,7 @@ import com.badlogic.gdx.Gdx;
  */
 
 
-public class Logger {
+public class Log {
     /**
      * debug message
      * @param message a text (String)
@@ -19,6 +19,7 @@ public class Logger {
      * @param n an integer number(long, int or short)
      */
     public static void log(long n){ log(""+n);}
+    public static void log(int n){ log(""+n);}
 
     /**
      * quick and dirty way for printing debug messages
