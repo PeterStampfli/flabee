@@ -25,8 +25,8 @@ public class Flowers {
     }
 
     public void createFlower(){
-        float y= MathUtils.random(GameScreen.WORLD_HEIGHT-Flower.GAP);
-        Flower flower=new Flower(GameScreen.WORLD_WIDTH+Flower.RADIUS,y,shapeRenderer);
+        float y= -MathUtils.random(400);
+        Flower flower=new Flower(GameScreen.WORLD_WIDTH+Flower.RADIUS,y,gameScreen);
         flowers.add(flower);
     }
 
@@ -48,18 +48,25 @@ public class Flowers {
                 gameScreen.score++;
                 flower.counted=true;
             }
+
             if (flower.isColliding(flabee)){
                 flowers.clear();
                 flabee.position.set(GameScreen.WORLD_WIDTH/4,GameScreen.WORLD_HEIGHT/2);
                 flabee.velocity.set(0,0);
                 gameScreen.score=0;
             }
+
         }
     }
 
     public void draw(){
         for (Flower flower:flowers){
             flower.draw();
+        }
+    }
+    public void drawDebug(){
+        for (Flower flower:flowers){
+            flower.drawDebug();
         }
     }
 }

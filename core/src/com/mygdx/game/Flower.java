@@ -1,5 +1,6 @@
 package com.mygdx.game;
 
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Intersector;
@@ -12,7 +13,9 @@ import com.badlogic.gdx.math.Vector2;
 
 public class Flower {
 
+    private GameScreen gameScreen;
     private  ShapeRenderer renderer;
+    private SpriteBatch batch;
 
     public Vector2 position;
     private Vector2 velocity;
@@ -23,20 +26,26 @@ public class Flower {
     private final Circle collisionCircleUp;
     private final Rectangle collisionRectangleDown;
     private final Rectangle collisionRectangleUp;
-    public final static float WIDTH=25f;
     public static final float RADIUS=33f;
+    public static final float WIDTH=2*RADIUS;
     public static final float SPEED=50f;
     public static  final float GAP=300f;
 
-    public  Flower(float x,float y,ShapeRenderer renderer){
-        this.renderer=renderer;
+    public static final float COLLISION_RECTANGLE_HEIGHT=447f;
+    public static final float COLLISION_RECTANGLE_WIDTH=13f;
+
+    public  Flower(float x,float y,GameScreen gameScreen){
+        this.gameScreen=gameScreen;
+        this.renderer=gameScreen.shapeRenderer;
+        this.batch=gameScreen.batch;
         position=new Vector2(x,y);
         velocity=new Vector2(-SPEED,0);
-        collisionCircleDown=new Circle(position.x,position.y,RADIUS);
-        collisionRectangleDown=new Rectangle(position.x-WIDTH/2,0,WIDTH,position.y);
-        collisionCircleUp=new Circle(position.x,position.y+GAP,RADIUS);
-        collisionRectangleUp=new Rectangle(position.x-WIDTH/2,position.y+GAP,
-                WIDTH,GameScreen.WORLD_HEIGHT-position.y-GAP);
+        collisionCircleDown=new Circle(position.x,position.y+COLLISION_RECTANGLE_HEIGHT-RADIUS,RADIUS);
+        collisionRectangleDown=new Rectangle(position.x-COLLISION_RECTANGLE_WIDTH/2,position.y,
+                COLLISION_RECTANGLE_WIDTH,COLLISION_RECTANGLE_HEIGHT);
+        collisionCircleUp=new Circle(collisionCircleDown.x,collisionCircleDown.y+GAP+RADIUS,RADIUS);
+        collisionRectangleUp=new Rectangle(collisionRectangleDown.x,collisionCircleUp.y-RADIUS,
+                COLLISION_RECTANGLE_WIDTH,COLLISION_RECTANGLE_HEIGHT);
     }
 
 
@@ -44,8 +53,8 @@ public class Flower {
         position.mulAdd(velocity,delta);
         collisionCircleDown.setX(position.x);
         collisionCircleUp.setX(position.x);
-        collisionRectangleUp.setX(position.x-WIDTH/2);
-        collisionRectangleDown.setX(position.x-WIDTH/2);
+        collisionRectangleUp.setX(position.x-COLLISION_RECTANGLE_WIDTH/2);
+        collisionRectangleDown.setX(position.x-COLLISION_RECTANGLE_WIDTH/2);
     }
 
     public boolean isColliding(Flabee flabee){
@@ -57,12 +66,18 @@ public class Flower {
 
 
     public void draw(){
-        renderer.setColor(0,1,0,1);
-        renderer.circle(position.x,position.y,RADIUS);
-        renderer.circle(position.x,position.y+ GAP,RADIUS);
-        renderer.rect(position.x-WIDTH/2,0,WIDTH,position.y);
-        renderer.rect(position.x-WIDTH/2,position.y+GAP,
-                WIDTH,GameScreen.WORLD_HEIGHT-position.y-GAP);
+        batch.draw(gameScreen.flowerBottom,position.x-52,collisionRectangleDown.y);
+        batch.draw(gameScreen.flowerTop,position.x-52,collisionRectangleUp.y);
     }
+
+    public void drawDebug(){
+        renderer.setColor(0,1,0,1);
+        renderer.circle(collisionCircleDown.x,collisionCircleDown.y,RADIUS);
+        renderer.circle(collisionCircleUp.x,collisionCircleUp.y,RADIUS);
+        renderer.rect(collisionRectangleDown.x,collisionRectangleDown.y,
+                COLLISION_RECTANGLE_WIDTH,COLLISION_RECTANGLE_HEIGHT);
+        renderer.rect(collisionRectangleUp.x,collisionRectangleUp.y,COLLISION_RECTANGLE_WIDTH,COLLISION_RECTANGLE_HEIGHT);
+    }
+
 
 }

@@ -1,15 +1,17 @@
 package com.mygdx.game;
 
 import com.badlogic.gdx.ScreenAdapter;
-import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import com.mygdx.game.utilities.Basic;
 import com.mygdx.game.utilities.Device;
+import com.mygdx.game.utilities.Log;
+
 
 /**
  * Created by peter on 1/16/17.
@@ -21,9 +23,10 @@ public class GameScreen extends ScreenAdapter {
     public Device device;
     public ShapeRenderer shapeRenderer;
     private BitmapFont bitmapFont;
-    private Viewport viewport;
+    public Viewport viewport;
     private GlyphLayout layout=new GlyphLayout();
-    private SpriteBatch batch;
+    public SpriteBatch batch;
+    private AssetManager assetManager;
 
     public static final float WORLD_WIDTH=480;
     public static final float WORLD_HEIGHT=640;
@@ -34,6 +37,11 @@ public class GameScreen extends ScreenAdapter {
     private Flowers flowers;
 
     public int score=0;
+    public Texture background;
+    public Texture flowerBottom;
+    public Texture flowerTop;
+    public Texture flappee;
+
 
 
     public GameScreen(FlabeeGame game){
@@ -42,12 +50,18 @@ public class GameScreen extends ScreenAdapter {
         shapeRenderer=device.shapeRenderer;
         bitmapFont=device.bitmapFont;
         batch=device.spriteBatch;
+        assetManager=game.assetManager;
         viewport=new FitViewport(WORLD_WIDTH,WORLD_HEIGHT);
+
     }
 
     @Override
     public void show(){
-        flabee=new Flabee(shapeRenderer);
+        flappee=assetManager.get("bee.png");
+        flowerTop=assetManager.get("flowerTop.png");
+        flowerBottom=assetManager.get("flowerBottom.png");
+        background=assetManager.get("bg.png");
+        flabee=new Flabee(this);
         flowers=new Flowers(this);
 
     }
@@ -68,18 +82,22 @@ public class GameScreen extends ScreenAdapter {
         layout.setText(bitmapFont,scoreText);
 
         viewport.apply(true);
-        Basic.clearBackground(Color.NAVY);
-        shapeRenderer.setProjectionMatrix(viewport.getCamera().combined);
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        flabee.draw();
-        flowers.draw();
-        shapeRenderer.end();
-
+        batch.totalRenderCalls=0;
         batch.setProjectionMatrix(viewport.getCamera().combined);
         batch.begin();
+        batch.draw(background,0,0);
+        flowers.draw();
+        flabee.draw();
         bitmapFont.draw(batch,scoreText,(WORLD_WIDTH-layout.width)/2,
                 (WORLD_HEIGHT-layout.height));
 
         batch.end();
+        Log.log(batch.totalRenderCalls);
+        shapeRenderer.setProjectionMatrix(viewport.getCamera().combined);
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+        flabee.drawDebug();
+        flowers.drawDebug();
+        shapeRenderer.end();
+
     }
 }
